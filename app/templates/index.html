@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetSentinel AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>NetSentinel AI</h1>
+    <p>AI-powered network anomaly detection and analysis</p>
+  </header>
+
+  <main>
+    <div class="notice">
+      <strong>Important:</strong> An anomaly is not automatically a cyberattack. Flagged records are
+      <em>potential anomalies that need further investigation</em>, not confirmed attacks.
+    </div>
+
+    <section class="card">
+      <h2>1. Upload a network-flow CSV</h2>
+      <p class="muted">
+        Required columns: <code>timestamp, protocol, duration, packets, bytes</code>.
+        At least 10 valid rows. Only upload data you are allowed to analyse.
+      </p>
+      <form id="upload-form">
+        <div class="form-row">
+          <label for="file-input">CSV file</label>
+          <input type="file" id="file-input" accept=".csv,text/csv">
+        </div>
+        <div class="form-row">
+          <label for="contamination-input">Expected share of unusual records (0.001 to 0.5)</label>
+          <input type="number" id="contamination-input" value="0.05" min="0.001" max="0.5" step="0.001">
+        </div>
+        <button type="submit" id="analyze-btn">Analyze</button>
+        <span id="loading" class="muted" hidden>Analyzing, please wait...</span>
+      </form>
+      <div id="error-box" class="error" role="alert" hidden></div>
+    </section>
+
+    <section id="results" hidden>
+      <h2 id="result-title">Results</h2>
+
+      <div class="stats">
+        <div class="stat"><span class="stat-label">Records analyzed</span><span class="stat-value" id="stat-total">0</span></div>
+        <div class="stat"><span class="stat-label">Flagged records</span><span class="stat-value" id="stat-flagged">0</span></div>
+        <div class="stat"><span class="stat-label">Percentage flagged</span><span class="stat-value" id="stat-percent">0%</span></div>
+        <div class="stat"><span class="stat-label">Rows skipped (invalid)</span><span class="stat-value" id="stat-skipped">0</span></div>
+      </div>
+
+      <div id="chart-warning" class="notice" hidden>Charts could not be loaded (Chart.js needs an internet connection).</div>
+
+      <div class="charts">
+        <div class="card"><h3>Normal vs anomalous</h3><canvas id="chart-distribution"></canvas></div>
+        <div class="card"><h3>Flagged records by protocol</h3><canvas id="chart-protocol"></canvas></div>
+        <div class="card"><h3>Flagged records: packets vs bytes</h3><canvas id="chart-scatter"></canvas></div>
+      </div>
+
+      <div class="card">
+        <h3>Flagged records (highest score first)</h3>
+        <p class="muted">
+          <strong>Score meaning:</strong> a higher score means the record is more unusual compared with the rest of
+          this file. It is a ranking, not the probability of an attack.
+        </p>
+        <p id="truncation-note" class="muted" hidden></p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>CSV row</th><th>Timestamp</th><th>Protocol</th><th>Duration</th><th>Packets</th><th>Bytes</th><th>Score</th></tr>
+            </thead>
+            <tbody id="alerts-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Analysis history</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>File</th><th>Date</th><th>Records</th><th>Flagged</th><th>%</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+      <p id="history-empty" class="muted" hidden>No analyses yet. Upload a file to get started.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">NetSentinel AI - student project. Results are for learning and investigation support only.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

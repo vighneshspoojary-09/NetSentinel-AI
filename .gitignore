@@ -1,0 +1,21 @@
+# Virtual environment
+.venv/
+venv/
+
+# Secrets
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Database and uploaded data (the sample CSV is kept)
+*.db
+*.sqlite3
+data/*
+!data/.gitkeep
+!data/sample_network_flows.csv
+
+# VS Code settings
+.vscode/
